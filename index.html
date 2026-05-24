@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Devnitha Dewasinghe | System Architect & Rugby Captain</title>
+    <style>
+        /* --- CORE VARIABLES --- */
+        :root {
+            --bg-base: #0a0a0f;
+            --bg-surface: #14141e;
+            --bg-card: #1c1c29;
+            --text-main: #e2e8f0;
+            --text-muted: #94a3b8;
+            --accent: #00ffcc;
+            --accent-glow: rgba(0, 255, 204, 0.4);
+            --accent-alt: #ff0055;
+            --accent-alt-glow: rgba(255, 0, 85, 0.4);
+            --warning: #c99d00; /* Darkish yellow panther vibe */
+            --font-mono: 'Fira Code', 'Courier New', Courier, monospace;
+            --font-sans: 'Inter', 'Segoe UI', system-ui, sans-serif;
+        }
+
+        /* --- RESET & BASE --- */
+        * { margin: 0; padding: 0; box-sizing: border-box; cursor: none; }
+        body {
+            background-color: var(--bg-base);
+            color: var(--text-main);
+            font-family: var(--font-sans);
+            overflow-x: hidden;
+            scroll-behavior: smooth;
+            background-image: 
+                linear-gradient(rgba(10, 10, 15, 0.9), rgba(10, 10, 15, 0.9)),
+                repeating-linear-gradient(0deg, transparent, transparent 49px, #1a1a24 50px),
+                repeating-linear-gradient(90deg, transparent, transparent 49px, #1a1a24 50px);
+            background-size: 50px 50px;
+        }
+
+        /* --- CUSTOM INTERACTIVE CURSOR --- */
+        .cursor-dot {
+            width: 6px; height: 6px; background: var(--accent);
+            border-radius: 50%; position: fixed; top: 0; left: 0;
+            pointer-events: none; z-index: 9999; transform: translate(-50%, -50%);
+            box-shadow: 0 0 10px var(--accent); transition: transform 0.1s;
+        }
+        .cursor-ring {
+            width: 36px; height: 36px; border: 2px dashed var(--accent-alt);
+            border-radius: 50%; position: fixed; top: 0; left: 0;
+            pointer-events: none; z-index: 9998; transform: translate(-50%, -50%);
+            transition: width 0.3s, height 0.3s, border-color 0.3s, transform 0.1s;
+            animation: spin 10s linear infinite;
+        }
+        @keyframes spin { 100% { transform: translate(-50%, -50%) rotate(360deg); } }
+
+        /* --- TYPOGRAPHY --- */
+        h1, h2, h3, h4 { font-family: var(--font-mono); text-transform: uppercase; letter-spacing: 1px; }
+        h2 { color: var(--text-main); font-size: 2.5rem; margin-bottom: 2rem; position: relative; display: inline-block; }
+        h2::after { content: ''; position: absolute; bottom: -10px; left: 0; width: 50%; height: 4px; background: var(--accent); box-shadow: 0 0 10px var(--accent-glow); }
+        p { line-height: 1.7; font-size: 1.1rem; color: var(--text-muted); margin-bottom: 1.5rem; }
+        .highlight { color: var(--accent); font-weight: bold; }
+        .highlight-alt { color: var(--accent-alt); font-weight: bold; }
+        .warning-text { color: var(--warning); font-weight: bold; }
+
+        /* --- LAYOUT --- */
+        section { min-height: 100vh; padding: 120px 8vw; display: flex; flex-direction: column; justify-content: center; position: relative; }
+        
+        /* --- HERO SECTION --- */
+        .hero { position: relative; }
+        .glitch-box { position: relative; display: inline-block; margin-bottom: 1rem; }
+        .glitch-text { font-size: 5rem; font-weight: 900; line-height: 1.1; position: relative; z-index: 1; text-shadow: 2px 2px 0 var(--bg-base); }
+        .glitch-text::before, .glitch-text::after {
+            content: attr(data-text); position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--bg-base); z-index: -1;
+        }
+        .glitch-text::before { left: 3px; text-shadow: -2px 0 var(--accent); animation: glitch-1 2s infinite linear alternate-reverse; }
+        .glitch-text::after { left: -3px; text-shadow: -2px 0 var(--accent-alt); animation: glitch-2 3s infinite linear alternate-reverse; }
+        
+        @keyframes glitch-1 {
+            0% { clip-path: inset(20% 0 80% 0); } 20% { clip-path: inset(60% 0 10% 0); }
+            40% { clip-path: inset(40% 0 50% 0); } 60% { clip-path: inset(80% 0 5% 0); }
+            80% { clip-path: inset(10% 0 70% 0); } 100% { clip-path: inset(30% 0 20% 0); }
+        }
+        @keyframes glitch-2 {
+            0% { clip-path: inset(10% 0 60% 0); } 20% { clip-path: inset(30% 0 20% 0); }
+            40% { clip-path: inset(70% 0 10% 0); } 60% { clip-path: inset(20% 0 50% 0); }
+            80% { clip-path: inset(50% 0 30% 0); } 100% { clip-path: inset(5% 0 80% 0); }
+        }
+
+        .terminal-text { font-family: var(--font-mono); color: var(--accent); font-size: 1.2rem; border-right: 2px solid var(--accent); white-space: nowrap; overflow: hidden; animation: typing 3s steps(40, end), blink 0.75s step-end infinite; margin-bottom: 2rem; display: inline-block; }
+        @keyframes typing { from { width: 0 } to { width: 100% } }
+        @keyframes blink { 50% { border-color: transparent } }
+
+        /* --- METRICS / STATS BAR --- */
+        .metrics-bar { display: flex; gap: 2rem; flex-wrap: wrap; margin-bottom: 2rem; background: var(--bg-surface); padding: 20px; border-radius: 8px; border-left: 4px solid var(--accent); }
+        .metric { display: flex; flex-direction: column; }
+        .metric-label { font-size: 0.8rem; text-transform: uppercase; color: var(--text-muted); font-family: var(--font-mono); }
+        .metric-value { font-size: 1.5rem; font-weight: bold; color: var(--text-main); }
+
+        /* --- GRIDS & CARDS --- */
+        .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 30px; margin-top: 40px; }
+        .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(450px, 1fr)); gap: 30px; margin-top: 40px; }
+        
+        .card {
+            background: var(--bg-card); padding: 30px; border-radius: 12px;
+            border: 1px solid #2a2a35; position: relative; overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: 1;
+        }
+        .card::before {
+            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(45deg, transparent, rgba(0, 255, 204, 0.05), transparent);
+            transform: translateX(-100%); transition: transform 0.6s; z-index: -1;
+        }
+        .card:hover::before { transform: translateX(100%); }
+        .card:hover { transform: translateY(-10px); border-color: var(--accent); box-shadow: 0 15px 30px rgba(0,0,0,0.6); }
+        
+        .card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px; border-bottom: 1px solid #333; padding-bottom: 10px; }
+        .card-title { font-size: 1.3rem; color: var(--text-main); }
+        .card-badge { background: rgba(0,255,204,0.1); color: var(--accent); padding: 4px 10px; border-radius: 4px; font-size: 0.8rem; font-family: var(--font-mono); }
+        .card-badge.alt { background: rgba(255,0,85,0.1); color: var(--accent-alt); }
+        
+        /* --- TIMELINE (EXPERIENCE & EDUCATION) --- */
+        .timeline { position: relative; padding-left: 40px; margin-top: 40px; }
+        .timeline::before { content: ''; position: absolute; top: 0; left: 19px; width: 2px; height: 100%; background: #333; }
+        .timeline-item { position: relative; margin-bottom: 50px; }
+        .timeline-item::before { content: ''; position: absolute; top: 5px; left: -26px; width: 12px; height: 12px; border-radius: 50%; background: var(--bg-base); border: 2px solid var(--accent); box-shadow: 0 0 10px var(--accent-glow); z-index: 2; transition: all 0.3s; }
+        .timeline-item:hover::before { background: var(--accent); transform: scale(1.5); }
+        .timeline-date { font-family: var(--font-mono); color: var(--accent); font-weight: bold; margin-bottom: 10px; display: block; font-size: 0.9rem; }
+        .timeline-content { background: var(--bg-surface); padding: 25px; border-radius: 8px; border: 1px solid #2a2a35; transition: border-color 0.3s; }
+        .timeline-content:hover { border-color: var(--accent-alt); }
+        .timeline-content h3 { color: var(--text-main); margin-bottom: 5px; }
+        .timeline-content h4 { color: var(--text-muted); font-size: 1rem; margin-bottom: 15px; text-transform: none; }
+
+        /* --- TAGS --- */
+        .tags { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 15px; }
+        .tag { background: #222; border: 1px solid #444; color: #ccc; padding: 5px 12px; border-radius: 20px; font-size: 0.8rem; font-family: var(--font-mono); transition: all 0.2s; }
+        .card:hover .tag { border-color: var(--accent); color: var(--text-main); }
+
+        /* --- SCROLL ANIMATIONS --- */
+        .reveal { opacity: 0; transform: translateY(60px) scale(0.95); transition: all 0.8s cubic-bezier(0.25, 1, 0.5, 1); }
+        .reveal.active { opacity: 1; transform: translateY(0) scale(1); }
+
+        /* --- BUTTONS --- */
+        .btn { 
+            display: inline-flex; align-items: center; justify-content: center;
+            padding: 15px 35px; font-family: var(--font-mono); font-weight: bold; 
+            text-transform: uppercase; text-decoration: none; color: var(--bg-base); 
+            background: var(--accent); border: none; border-radius: 4px; 
+            position: relative; overflow: hidden; transition: all 0.3s; z-index: 1;
+            margin-top: 20px; cursor: none;
+        }
+        .btn::after {
+            content: ''; position: absolute; bottom: 0; left: 0; width: 100%; height: 100%;
+            background: var(--accent-alt); transform: translateY(100%); transition: transform 0.3s; z-index: -1;
+        }
+        .btn:hover { color: var(--text-main); box-shadow: 0 0 25px var(--accent-alt-glow); }
+        .btn:hover::after { transform: translateY(0); }
+
+        /* --- FOOTER --- */
+        footer { background: #050508; padding: 40px; text-align: center; border-top: 1px solid #222; font-family: var(--font-mono); }
+    </style>
+</head>
+<body>
+
+    <div class="cursor-dot" id="cursor-dot"></div>
+    <div class="cursor-ring" id="cursor-ring"></div>
+
+    <section class="hero">
+        <p style="font-family: var(--font-mono); color: var(--accent-alt); margin-bottom: 10px;">> connection_established: initializing user_profile</p>
+        
+        <div class="glitch-box">
+            <h1 class="glitch-text" data-text="DEVNITHA DEWASINGHE">DEVNITHA DEWASINGHE</h1>
+        </div>
+        
+        <div class="terminal-text">BSc Software Engineering Undergrad | Tech Architect | Rugby Captain</div>
+        
+        <div class="metrics-bar">
+            <div class="metric">
+                <span class="metric-label">Current CWA</span>
+                <span class="metric-value highlight">65.36</span>
+            </div>
+            <div class="metric">
+                <span class="metric-label">University</span>
+                <span class="metric-value">Curtin University Colombo</span>
+            </div>
+            <div class="metric">
+                <span class="metric-label">Focus</span>
+                <span class="metric-value highlight-alt">Project Mgmt & Ops</span>
+            </div>
+            <div class="metric">
+                <span class="metric-label">Leadership</span>
+                <span class="metric-value">Head of Sports '25 / VP Social Impact Club</span>
+            </div>
+        </div>
+
+        <p style="max-width: 800px; font-size: 1.2rem;">
+            Driven, adaptable, and highly coordinated. I am currently in my 2nd year at Curtin University Colombo, 
+            specializing in translating complex requirements into actionable, secure workflows. 
+            When I'm not writing Java, configuring Red Hat Linux, or enforcing <span class="highlight">strict MySQL</span> database integrations, 
+            I'm leading teams on the field as a Rugby Captain. 
+            <br><br>
+            My philosophy? Code shouldn't break, deadlines shouldn't be missed, and opposing forwards shouldn't break the defensive line. I manage system logs and sports budgets with the exact same level of aggressive precision.
+        </p>
+
+        <div>
+            <a href="#projects" class="btn interactive">Execute Portfolio.sh</a>
+        </div>
+    </section>
+
+    <section id="skills" class="reveal">
+        <h2>> sudo get_loadout --verbose</h2>
+        <p>A strong foundation in software development, system design, and collaborative tools. Recognized for accountability and fast-paced problem-solving.</p>
+        
+        <div class="grid-3">
+            <div class="card interactive">
+                <div class="card-header">
+                    <h3 class="card-title">Core Development</h3>
+                    <span class="card-badge">Languages</span>
+                </div>
+                <p>Proficient in writing clean, scalable logic. Experienced in version control (GitHub), OOP, and Markdown documentation.</p>
+                <div class="tags">
+                    <span class="tag">Java</span> <span class="tag">C</span> <span class="tag">C#</span> <span class="tag">Python</span> <span class="tag">C89</span>
+                </div>
+            </div>
+            
+            <div class="card interactive">
+                <div class="card-header">
+                    <h3 class="card-title">Infrastructure & DB</h3>
+                    <span class="card-badge alt">SysAdmin</span>
+                </div>
+                <p>Advanced system administration. Note: I enforce <span class="highlight">MySQL</span> architecture. PostreSQL is not part of my current deployment stack. If standard emails fail, I deploy custom vulnerability scan alerts.</p>
+                <div class="tags">
+                    <span class="tag">Red Hat Linux</span> <span class="tag">MySQL</span> <span class="tag">Bash/Shell Scripting</span> <span class="tag">Packet Tracer</span>
+                </div>
+            </div>
+
+            <div class="card interactive">
+                <div class="card-header">
+                    <h3 class="card-title">Tools & Management</h3>
+                    <span class="card-badge">Operations</span>
+                </div>
+                <p>Agile teamwork, requirements gathering, and design planning. Coordinating people to achieve clear outcomes is my specialty.</p>
+                <div class="tags">
+                    <span class="tag">Agile Scrum</span> <span class="tag">Selenium</span> <span class="tag">Figma / Canva</span> <span class="tag">Adobe Illustrator/PS</span>
+                </div>
+            </div>
+        </div>
+
+        <h3 style="margin-top: 50px; margin-bottom: 20px; color: var(--accent);">[ CERTIFICATIONS & TRAINING ]</h3>
+        <div class="grid-2">
+            <div class="card interactive" style="border-left: 4px solid var(--accent);">
+                <h4>Red Hat System Administration (RH124 & RH134)</h4>
+                <p style="margin-top: 10px; font-size: 0.95rem;"><strong>Skills:</strong> Linux System Admin, File System Mgmt, Process Management, Storage Configuration, Security & System Services.</p>
+            </div>
+            <div class="card interactive" style="border-left: 4px solid var(--accent-alt);">
+                <h4>STEMLINK Project Mgmt & Business Analysis Boot Camp 2.0</h4>
+                <p style="margin-top: 10px; font-size: 0.95rem;"><strong>Skills:</strong> Project Management, task delivery, analyzing data, teamwork, and coordinating timely deliverables.</p>
+            </div>
+            <div class="card interactive" style="border-left: 4px solid var(--warning);">
+                <h4>AI and Computer Vision Workshop (Virtusa)</h4>
+                <p style="margin-top: 10px; font-size: 0.95rem;"><strong>Skills:</strong> Successfully deployed a custom Machine Learning AI Model focused specifically on Object Detection.</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="projects" class="reveal">
+        <h2>> ls -la ./deploys</h2>
+        <p>From complex data models to console-based stealth games. Every project is structured, documented, and built to scale.</p>
+        
+        <div class="grid-2">
+            <div class="card interactive">
+                <div class="card-header">
+                    <h3 class="card-title">ACDSC Management System</h3>
+                    <span class="card-badge">Software Eng. Group</span>
+                </div>
+                <p>Worked in a 4-member team to plan and design the Aged Care and Disability Services Centre system using <strong>Agile Scrum methodology</strong>. Contributed heavily to requirements gathering, UML system modeling, and scheduling features to deliver a secure web/mobile solution.</p>
+                <div class="tags"><span class="tag">Agile</span> <span class="tag">UML</span> <span class="tag">System Modeling</span></div>
+            </div>
+
+            <div class="card interactive">
+                <div class="card-header">
+                    <h3 class="card-title">Smart Grocery Planner</h3>
+                    <span class="card-badge alt">Project Mgmt</span>
+                </div>
+                <p>Led the planning and coordination of a system designed to improve shopping efficiency. Managed project requirements, task breakdown, and system workflow to ensure a highly structured and user-centered development process.</p>
+                <div class="tags"><span class="tag">Project Management</span> <span class="tag">Workflow Design</span></div>
+            </div>
+
+            <div class="card interactive">
+                <div class="card-header">
+                    <h3 class="card-title">C89 Stealth Game</h3>
+                    <span class="card-badge">C Programming</span>
+                </div>
+                <p>Developed a console-based stealth game using legacy C89. Features complex logic including player movement, a 2D map-based gameplay system, and enemies with dynamic rotating vision mechanics.</p>
+                <div class="tags"><span class="tag">C89</span> <span class="tag">Game Logic</span> <span class="tag">2D Arrays</span></div>
+            </div>
+
+            <div class="card interactive">
+                <div class="card-header">
+                    <h3 class="card-title">Software Eng. Testing Automation</h3>
+                    <span class="card-badge">Selenium / Java</span>
+                </div>
+                <p>Developed and executed automated software tests using <strong>Selenium with Java</strong> to validate application functionality. Managed test scripts in GitHub and verified test cases locally in VS Code to guarantee consistent system behavior before deployment.</p>
+                <div class="tags"><span class="tag">Java</span> <span class="tag">Selenium</span> <span class="tag">QA Testing</span></div>
+            </div>
+
+            <div class="card interactive">
+                <div class="card-header">
+                    <h3 class="card-title">Olympic Data System</h3>
+                    <span class="card-badge">Database Design</span>
+                </div>
+                <p>Engineered an Olympic medal tracking system utilizing <span class="highlight">MySQL</span>. Managed massive records for countries, specific athletes, and sport-specific medal distributions flawlessly.</p>
+                <div class="tags"><span class="tag">MySQL</span> <span class="tag">Relational DB</span></div>
+            </div>
+
+            <div class="card interactive">
+                <div class="card-header">
+                    <h3 class="card-title">Computer Communications</h3>
+                    <span class="card-badge">Networking</span>
+                </div>
+                <p>Completed 3 structured assignments in <strong>Packet Tracer</strong> covering core networking concepts: OSI/TCP-IP models, data link protocols, IP addressing, routing, packet analysis, and real-world network configuration.</p>
+                <div class="tags"><span class="tag">Packet Tracer</span> <span class="tag">TCP/IP</span> <span class="tag">Routing</span></div>
+            </div>
+
+            <div class="card interactive">
+                <div class="card-header">
+                    <h3 class="card-title">Library System & Color Frequency Checker</h3>
+                    <span class="card-badge">Java Applications</span>
+                </div>
+                <p>Developed a robust Library Management System with full CRUD capabilities. Built a secondary Java system to analyze color frequencies and document unique facts, heavily utilizing Git for version control and Markdown for reporting.</p>
+                <div class="tags"><span class="tag">Java</span> <span class="tag">Git</span> <span class="tag">Markdown</span></div>
+            </div>
+
+            <div class="card interactive">
+                <div class="card-header">
+                    <h3 class="card-title">Foundation Short Film</h3>
+                    <span class="card-badge warning-text">Creative / Design</span>
+                </div>
+                <p>Created, filmed, and edited a short film focused on environmental pollution. Designed the creative brand name and logo from scratch (moving away from classy realism to an intimidating, darkish yellow panther design motif).</p>
+                <div class="tags"><span class="tag">Video Editing</span> <span class="tag">Branding</span> <span class="tag">Logo Design</span></div>
+            </div>
+        </div>
+    </section>
+
+    <section id="experience" class="reveal" style="background: var(--bg-surface);">
+        <h2>> cat history.log</h2>
+        <p>A timeline of academic progression, professional internships, and aggressive sports leadership.</p>
+
+        <div class="grid-2">
+            <div>
+                <h3 style="color: var(--accent); margin-bottom: 20px;">[ PROFESSIONAL EXPERIENCE ]</h3>
+                <div class="timeline">
+                    <div class="timeline-item interactive">
+                        <span class="timeline-date">2025 - 2026 | La Trobe University Colombo</span>
+                        <div class="timeline-content">
+                            <h3>Intern - Student Records, Marketing & Social Media</h3>
+                            <p>Assisted with massive data entry, managed student queries, and maintained accurate academic records. Supported digital marketing and social media activities to significantly enhance university engagement and communication.</p>
+                        </div>
+                    </div>
+                    <div class="timeline-item interactive">
+                        <span class="timeline-date">2024 - 2025 | Curtin University Colombo</span>
+                        <div class="timeline-content">
+                            <h3>Intern - Student Records & Marketing</h3>
+                            <p>Handled complex student and staff inquiries, maintained accurate data records, and supported database updates with intense attention to detail. Coordinated marketing campaigns and promotional distributions.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div>
+                <h3 style="color: var(--accent-alt); margin-bottom: 20px;">[ ACADEMICS & LEADERSHIP ]</h3>
+                <div class="timeline">
+                    <div class="timeline-item interactive">
+                        <span class="timeline-date">Current | Curtin University Colombo</span>
+                        <div class="timeline-content">
+                            <h3>BSc Computing in Software Engineering</h3>
+                            <h4>2nd Year Student | CWA: 65.36</h4>
+                            <p><strong>Leadership:</strong> Captain of the Rugby Team (2025-Present), Head of Sports (Curtin Colombo Student Guild '25), Vice-president of Social Impact Club, and Committee Head for Sports.</p>
+                        </div>
+                    </div>
+                    <div class="timeline-item interactive">
+                        <span class="timeline-date">2023 - 2024 | Curtin University Colombo</span>
+                        <div class="timeline-content">
+                            <h3>Foundation in IT</h3>
+                            <p>Completed foundational studies in Programming, documentations, information systems, and design plannings to prep for the Software Engineering degree.</p>
+                        </div>
+                    </div>
+                    <div class="timeline-item interactive">
+                        <span class="timeline-date">Graduated | S. Thomas Preparatory School</span>
+                        <div class="timeline-content">
+                            <h3>GCE O-Level: 2 A's, 5 B's, 2 C's</h3>
+                            <p><strong>Activities:</strong> Vice-captain U-14 Rugby, Vice-captain U-14/16 Hockey, Senior Corporal (Batch of 2022), Treasurer of Christian Society, Dancing Troup, Art Club.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="contact" class="reveal">
+        <h2>> initiate_handshake.exe</h2>
+        <p style="font-size: 1.2rem; max-width: 600px;">
+            I am motivated to continuously learn, grow, and apply my technical skills to deliver impactful, real-world solutions. 
+            Whether you need a full-stack system deployed, a project workflow optimized, or someone to organize a heist in PAYDAY 2, my terminal is open.
+        </p>
+        
+        <div style="margin-top: 30px; display: flex; flex-direction: column; gap: 15px; font-family: var(--font-mono); font-size: 1.1rem;">
+            <p><span class="highlight">Email:</span> devnithamethnodh@gmail.com</p>
+            <p><span class="highlight">Phone:</span> +94 77 798 7182</p>
+        </div>
+
+        <div>
+            <a href="https://www.linkedin.com/in/devnitha-dewasinghe-94b917340/" target="_blank" class="btn interactive">Connect on LinkedIn</a>
+        </div>
+    </section>
+
+    <footer>
+        <p>System Architecture & UI built by Devnitha Dewasinghe.</p>
+        <p style="font-size: 0.8rem; color: #444; margin-top: 10px;">Fueled by strict MySQL enforcement, Agile scrums, and Assetto Corsa drift runs.</p>
+    </footer>
+
+    <script>
+        // Custom Cursor Logic
+        const cursorDot = document.getElementById("cursor-dot");
+        const cursorRing = document.getElementById("cursor-ring");
+        const interactives = document.querySelectorAll(".interactive, a");
+
+        window.addEventListener("mousemove", (e) => {
+            const posX = e.clientX;
+            const posY = e.clientY;
+
+            // Instant follow for dot
+            cursorDot.style.left = `${posX}px`;
+            cursorDot.style.top = `${posY}px`;
+
+            // Delayed smooth follow for ring
+            setTimeout(() => {
+                cursorRing.style.left = `${posX}px`;
+                cursorRing.style.top = `${posY}px`;
+            }, 60);
+        });
+
+        // Hover states for cursor
+        interactives.forEach(el => {
+            el.addEventListener("mouseenter", () => {
+                cursorRing.style.width = "50px";
+                cursorRing.style.height = "50px";
+                cursorRing.style.borderColor = "var(--accent)";
+                cursorRing.style.borderStyle = "solid";
+                cursorRing.style.backgroundColor = "rgba(0, 255, 204, 0.1)";
+                cursorDot.style.transform = "translate(-50%, -50%) scale(2)";
+            });
+            el.addEventListener("mouseleave", () => {
+                cursorRing.style.width = "36px";
+                cursorRing.style.height = "36px";
+                cursorRing.style.borderColor = "var(--accent-alt)";
+                cursorRing.style.borderStyle = "dashed";
+                cursorRing.style.backgroundColor = "transparent";
+                cursorDot.style.transform = "translate(-50%, -50%) scale(1)";
+            });
+        });
+
+        // Scroll Reveal Animation via Intersection Observer
+        const reveals = document.querySelectorAll(".reveal");
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: "0px 0px -50px 0px"
+        };
+
+        const revealObserver = new IntersectionObserver(function(entries, observer) {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add("active");
+                    observer.unobserve(entry.target); // Only animate once
+                }
+            });
+        }, observerOptions);
+
+        reveals.forEach(reveal => {
+            revealObserver.observe(reveal);
+        });
+    </script>
+</body>
+</html>
